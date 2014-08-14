@@ -37,14 +37,11 @@
 #    statement from all source files in the program, then also delete it here.
 #
 
+import os
 import logging
-from twisted.internet import defer
 from deluge.ui.client import client
 from deluge import component
 from deluge.plugins.pluginbase import WebPluginBase
-import deluge.configmanager
-
-# Relative imports
 from common import get_resource
 
 log = logging.getLogger(__name__)
@@ -58,19 +55,8 @@ DEFAULT_PREFS = {
     }
 }
 
-class WebUI(WebPluginBase, component.Component):
+class WebUI(WebPluginBase):
 
     scripts = [get_resource("notifications.js")]
-
-    def __init__(self, plugin_name):
-        WebPluginBase.__init__(self, plugin_name)
-        component.Component.__init__(self, "Notifications")
-
-    def enable(self):
-        self.config = deluge.configmanager.ConfigManager(
-            "notifications-web.conf", DEFAULT_PREFS
-        )
-        log.debug("Enabling Web UI notifications")
-
-    def disable(self):
-        log.debug("Disabling Web UI notifications")
+    debug_scripts = scripts
+    

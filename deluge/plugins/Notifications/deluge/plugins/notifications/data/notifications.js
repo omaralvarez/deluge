@@ -1,50 +1,96 @@
-/*
-Script: notifications.js
-    The client-side javascript code for the Notifications plugin.
+/*!
+ * notifications.js
+ *
+ * Copyright (c) Omar Alvarez 2014 <omar.alvarez@udc.es>
+ *
+ * This file is part of Deluge and is licensed under GNU General Public License 3.0, or later, with
+ * the additional special exception to link portions of this program with the OpenSSL library.
+ * See LICENSE for more details.
+ *
+ */
 
-Copyright:
-    (C) Pedro Algarvio 2009 <damoxc@gmail.com>
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3, or (at your option)
-    any later version.
+Ext.ns('Deluge.ux.preferences');
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+/**
+ * @class Deluge.ux.preferences.NotificationsPage
+ * @extends Ext.Panel
+ */
+Deluge.ux.preferences.NotificationsPage = Ext.extend(Ext.Panel, {
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, write to:
-        The Free Software Foundation, Inc.,
-        51 Franklin Street, Fifth Floor
-        Boston, MA  02110-1301, USA.
+    title: _('Notifications'),
+    layout: 'fit',
+    border: false,
+    autoScroll: true,
 
-    In addition, as a special exception, the copyright holders give
-    permission to link the code of portions of this program with the OpenSSL
-    library.
-    You must obey the GNU General Public License in all respects for all of
-    the code used other than OpenSSL. If you modify file(s) with this
-    exception, you may extend this exception to your version of the file(s),
-    but you are not obligated to do so. If you do not wish to do so, delete
-    this exception statement from your version. If you delete this exception
-    statement from all source files in the program, then also delete it here.
-*/
+    initComponent: function() {
+        Deluge.ux.preferences.NotificationsPage.superclass.initComponent.call(this);
 
-NotificationsPlugin = Ext.extend(Deluge.Plugin, {
-	constructor: function(config) {
-		config = Ext.apply({
-			name: "Notifications"
-		}, config);
-		NotificationsPlugin.superclass.constructor.call(this, config);
-	},
-	
-	onDisable: function() {
-		
-	},
-	
-	onEnable: function() {
-		
-	}
+        this.uiSettingsFset = new Ext.form.FieldSet({
+            xtype: 'fieldset',
+            border: false,
+            title: _('UI Notifications'),
+            autoHeight: true,
+            defaultType: 'checkbox',
+            style: 'margin-top: 3px; margin-bottom: 0px; padding-bottom: 0px;',
+            autoWidth: true,
+            labelWidth: 1
+        });
+
+        this.chkBlinks = this.uiSettingsFset.add({
+            fieldLabel: _(''),
+            labelSeparator: '',
+            name: 'blinks',
+            boxLabel: 'Tray icon blinks enabled'
+        });
+
+        this.chkPopups = this.uiSettingsFset.add({
+            fieldLabel: _(''),
+            labelSeparator: '',
+            name: 'popups',
+            boxLabel: 'Popups enabled'
+        });
+
+        this.hBoxSound = this.uiSettingsFset.add({
+            fieldLabel: _(''),
+            labelSeparator: '',
+            name: 'sound',
+            xtype: 'container',
+            layout: 'hbox',
+            items: [{
+                xtype: 'checkbox',
+                boxLabel: 'Sound enabled',
+                margins: '0 0 0 6'
+            },{
+                xtype: 'textfield',
+                margins: '0 0 0 3',
+                width: '60%'
+            }]
+        });
+
+        this.tabPanSettings = this.add({
+            xtype: 'tabpanel',
+            activeTab: 0,
+            items: [{
+                    title: 'Settings',
+                    items: [this.uiSettingsFset]
+            }
+            ]
+        });
+        
+    },
+
 });
-new NotificationsPlugin();
+
+Deluge.plugins.NotificationsPlugin = Ext.extend(Deluge.Plugin, {
+
+    name: 'Notifications',
+
+    onDisable: function() {
+        deluge.preferences.removePage(this.prefsPage);
+    },
+
+    onEnable: function() {
+        this.prefsPage = deluge.preferences.addPage(new Deluge.ux.preferences.NotificationsPage());
+    }
+});
+Deluge.registerPlugin('Notifications', Deluge.plugins.NotificationsPlugin);
