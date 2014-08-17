@@ -242,6 +242,107 @@ Deluge.ux.preferences.NotificationsPage = Ext.extend(Ext.Panel, {
                 }]
         });
 
+        this.edGridSubs = new Ext.grid.EditorGridPanel({
+            xtype: 'editorgrid',
+            autoHeight: true,
+            autoExpandColumn: 'event',
+            viewConfig: {
+                emptyText: _('Loading events...'),
+                deferEmptyText: false
+            },
+            colModel: new Ext.grid.ColumnModel({
+                defaults: {
+                    renderer: function(value, meta, record, rowIndex, colIndex, store) {
+                        if (Ext.isNumber(value) && parseInt(value) !== value) {
+                            return value.toFixed(6);
+                        } else if (Ext.isBoolean(value)) {
+                            return '<div class="x-grid3-check-col' + (value ? '-on' : '') +
+                            '" style="width: 20px;">&#160;</div>';
+                        }
+                        return value;
+                    }
+                },
+                columns: [{
+                    id: 'event',
+                    header: 'Event',
+                    dataIndex: 'event',
+                    sortable: true,
+                    hideable: false
+                    //menuDisabled: true
+                },{
+                    id: 'email',
+                    header: _('Email'),
+                    dataIndex: 'email',
+                    sortable: true,
+                    hideable: false,
+                    menuDisabled: true,
+                    width: 40
+                },{
+                    id: 'popup',
+                    header: _('Popup'),
+                    dataIndex: 'popup',
+                    sortable: true,
+                    hideable: false,
+                    menuDisabled: true,
+                    width: 40
+                },{
+                    id: 'blink',
+                    header: _('Blink'),
+                    dataIndex: 'blink',
+                    sortable: true,
+                    hideable: false,
+                    menuDisabled: true,
+                    width: 40
+                },{
+                    id: 'sound',
+                    header: _('Sound'),
+                    dataIndex: 'sound',
+                    sortable: true,
+                    hideable: false,
+                    menuDisabled: true,
+                    width: 40
+                }]
+            }),
+            store: new Ext.data.ArrayStore({
+                autoDestroy: true,
+                fields: [{
+                    name: 'enabled'
+                },{
+                    name: 'name'
+                },{
+                    name: 'setting'
+                },{
+                    name: 'actual'
+                }]
+            }) 
+        });
+
+        this.listSoundCust = new Ext.list.ListView({
+            store: new Ext.data.SimpleStore({
+                fields: [{
+                    name: 'event',
+                    mapping: 1
+                },{
+                    name: 'name',
+                    mapping: 2
+                }],
+                id: 0
+            }),
+            columns: [{
+                width: .3,
+                header: _('Event'),
+                sortable: true,
+                dataIndex: 'event'
+            },{
+                id: 'name',
+                header: _('Name'),
+                sortable: true,
+                dataIndex: 'name'
+            }],
+            singleSelect: true,
+            autoExpandColumn: 'name'
+        });
+
         this.tabPanSettings = this.add({
             xtype: 'tabpanel',
             activeTab: 0,
@@ -250,9 +351,26 @@ Deluge.ux.preferences.NotificationsPage = Ext.extend(Ext.Panel, {
                 items: [this.uiSettingsFset,this.emailNotiFset,this.recipientsFset],
                 autoScroll: true
             },{
-                title: 'Subscriptions'
+                title: 'Subscriptions',
+                items: this.edGridSubs
             },{
-                title: 'Sound Customization'
+                title: 'Sound Customization',
+                items: [this.listSoundCust],
+                bbar: {
+                    items: [{
+                        text: _('Edit'),
+                        iconCls: 'icon-edit',
+                        handler: this.onEditClick,
+                        scope: this,
+                        disabled: true
+                    },{
+                        text: _('Revert'),
+                        iconCls: 'icon-redo',
+                        handler: this.onRevertClick,
+                        scope: this,
+                        disabled: true
+                    }]
+                }
             }]
         });
         
