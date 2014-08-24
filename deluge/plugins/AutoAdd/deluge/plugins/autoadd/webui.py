@@ -23,9 +23,10 @@ log = logging.getLogger(__name__)
 class WebUI(WebPluginBase):
 
     scripts = [get_resource("autoadd.js")]
+    debug_scripts = scripts
 
     def enable(self):
-        pass
+        log.debug("Enabling AutoAdd")
 
     def disable(self):
-        pass
+        log.debug("Disabling AutoAdd")
